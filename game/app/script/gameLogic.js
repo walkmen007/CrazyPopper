@@ -1,3 +1,6 @@
+
+var setDelay = null;
+var isSetNewLevel = true;
 function checkForCell(index, isFound, value){
     if(grid[index].isActive){
   	  grid[index].level--;
@@ -88,26 +91,47 @@ function trackLocation(eve){
   return col; 
 }
 
+function setNewGameLevel(){
+  gameLevel++;
+  clearTimeout(setDelay);
+  gameInit(gameLevel);
+}
+
 function handlePopperChain(cell){
   //console.log("handlePopperChain---",cell, grid[cell]);
   var topCell, rightCell, bottomCell, leftCell; 
-    var setDelay = setTimeout(function(){
+      setDelay = setTimeout(function(){
        var rightX = checkRight(cell);
        var leftX = checkLeft(cell);
        var topY = checkTop(cell);
        var bottomY = checkBottom(cell);
-       if(rightX){
+       if(rightX && popperLeft >0){
+          popperLeft--;
           handlePopperChain(rightX)
        }
-       if(leftX){
+       if(leftX && popperLeft >0){
+          popperLeft--;
           handlePopperChain(leftX)
        }
-       if(topY){
+       if(topY && popperLeft >0){
+          popperLeft--;
           handlePopperChain(topY)
        }
-       if(bottomY){
+       if(bottomY && popperLeft >0){
+          popperLeft--
           handlePopperChain(bottomY)
-       }   
+       }
+       console.log("popperLeft",popperLeft);
+       if(popperLeft <1 && isSetNewLevel){
+          isSetNewLevel = false;
+          drawRect(0,0, canvas.width, canvas.height, '#a1c2e8');
+          colorText("Level Change", canvas.width/2, canvas.height/2, 'white');
+          var timeout = setTimeout(function(){
+            setNewGameLevel(gameLevel)
+            clearTimeout(timeout);
+          }, 2000);  
+       }
+       //clearTimeout(setDelay);
     }, 2000);
     createGrid();
 }
