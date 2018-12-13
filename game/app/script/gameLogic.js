@@ -7,6 +7,7 @@ function checkForCell(index, isFound, value){
 	  grid[index].isActive = grid[index].level>0 ? true : false;
     grid[index].imageUrl = grid[index].level;
 	  isFound = true;
+    popperBurst.play();
     }else{
     	index = index + value;
     } 
@@ -99,8 +100,8 @@ function setNewGameLevel(){
 
 function handlePopperChain(cell){
   //console.log("handlePopperChain---",cell, grid[cell]);
-  var topCell, rightCell, bottomCell, leftCell; 
-      setDelay = setTimeout(function(){
+   var topCell, rightCell, bottomCell, leftCell; 
+       setDelay = setTimeout(function(){
        var rightX = checkRight(cell);
        var leftX = checkLeft(cell);
        var topY = checkTop(cell);
@@ -118,11 +119,13 @@ function handlePopperChain(cell){
           handlePopperChain(topY)
        }
        if(bottomY && popperLeft >0){
-          popperLeft--
+          popperLeft--;
           handlePopperChain(bottomY)
        }
        console.log("popperLeft",popperLeft);
        if(popperLeft <1 && isSetNewLevel){
+          gameBgsound.stop();
+          levelComplete.play();
           isSetNewLevel = false;
           drawRect(0,0, canvas.width, canvas.height, '#a1c2e8');
           colorText("Level Change", canvas.width/2, canvas.height/2, 'white');

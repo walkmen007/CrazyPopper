@@ -4,7 +4,6 @@ var gameLevel = 0;
 var maxClick = 0;
 var popperLeft = 0;
 
-
 function drawRect(x,y, w,h, color){
   context.fillStyle = color;
   context.fillRect(x,y, w,h, color);
@@ -37,13 +36,13 @@ function setGameLevelData(gameLevel){
     grid[popperPos[i]].level = popperLevel[i];
     grid[popperPos[i]].imageUrl = gameImages[popperLevel[i]];
     popperLeft += levelInfo.color[i];
-  }
-  console.log("Max Bust Count---", popperLeft); 
+  } 
 }
 
 function createGrid(){
   context.drawImage(gameImages[9], 0,0, canvas.width, canvas.height);
   colorText("Level " +(gameLevel+1) , canvas.width/2 -20, canvas.height -30, 'black');
+  
   if(imageCounter == gameImages.length-1){
     for(var row = 0; row < GRID_ROW; row++){
         for(var col=0; col<GRID_COL; col++){
@@ -70,9 +69,10 @@ function checkForActivePopper(){
   for(var i=0; i <size; i++){
     if(grid[popperPos[i]].isActive){
         return false;
-
     }
   }
+  popperBurst.stop();
+  missSound.play();
   return true;
 }
 
@@ -80,8 +80,9 @@ function checkForActivePopper(){
 function bustPopper(event){
   var cell = trackLocation(event)
   var isclickValid = true;
+  gameBgsound.play();
   if(maxClick === 0){
-     console.log("Max Click Reached----", maxClick);
+     missSound.play();
      isclickValid = checkForActivePopper();
      if(isclickValid){
        gameInit(0);
@@ -103,9 +104,13 @@ function bustPopper(event){
             context.drawImage(gameImages[9],0,0, canvas.width, canvas.height);
             delay = 0;
             setTimeout(function(){
+              //gameBgsound.stop();
+              popperBurst.play();
               handlePopperChain(cell);
               clearTimeout();
             },0)      
+      }else{
+        missSound.play();
       }
   }
   
@@ -113,14 +118,14 @@ function bustPopper(event){
 }
 
 
-function gameInit(level){
-  console.log("game init call",level, maxClick);  
+function gameInit(level){ 
   if(level > 2){
     level = 0;
   }
   maxClick = 0;
   popperLeft = 0;
   generateCell();
+  gameBgsound.stop();
   setGameLevelData(level);
   createGrid();
   isSetNewLevel = true;
@@ -137,6 +142,7 @@ function onImageLoadComplete(){
 window.onload = function(){
   canvas = document.getElementById('crazyPopper');
   context = canvas.getContext('2d');
+  loadSound();
   drawRect(0,0, canvas.width, canvas.height, '#a1c2e8');
   colorText("Loadin Images...", canvas.width/2, canvas.height/2, 'white');
   preloadImages(onImageLoadComplete);

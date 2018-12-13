@@ -5,14 +5,13 @@ const GRID_HEIGHT = 80;
 
 var gameImages = [];
 var imageCounter = 0;
-var imgLoded = false
+var imgLoded = false;
 
+var levelComplete;
+var missSound;
+var gameBgsound;
+var popperBurst;
 
-var path = 'app/assets/sound/';
-var gameSound = new sound(path+'applauseShort.mp3');
-var misSound = new sound(path + 'awh.mp3');
-var gameBgsound = new sound(path + 'bgmusic.mp3');
-//var gameMusic = new sound(path + '');
 
 function sound(src) {
     this.sound = document.createElement("audio");
@@ -28,18 +27,6 @@ function sound(src) {
         this.sound.pause();
     }    
 }
-
-
-function setMediaUrlStr(){
-	var soundArr = [];
-	var path = 'app/assets/sound/';
-	soundArr.push(path +'applauseShort.mp3');
-	soundArr.push(path +'awh.mp3');
-	soundArr.push(path +'pop3.mp3');
-	soundArr.push(path +'bgmusic.mp3');
-	return soundArr;
-}
-
 
 function setImageUrlStr(){
 	var imgPathlist = [];
@@ -60,7 +47,6 @@ function setImageUrlStr(){
 
 function preloadImages(callback){
 	var imgPathList = [];
-	var soundList = [];
 	var imgLen = 0;
 	    imgPathList = setImageUrlStr();
 	    imgLen = imgPathList.length;
@@ -75,38 +61,13 @@ function preloadImages(callback){
           }  
 		}	
 	}
-    
-	// for(var i=0; i <soundLen; i++){
-	// 	var newSound = new sound();
-	// 	sound.src = assetsPathList[i];
-	// 	img.onload = function(){
- //          imageCounter++;
- //          if(imageCounter === 9){
- //          	callback();
- //          }  
-	// 	}	
-	// }
 }
 
+function loadSound(){
+	 var soundPath = 'app/assets/sound/';
+	 levelComplete = new sound(soundPath +'applauseShort.mp3');
+	 missSound = new sound(soundPath + 'awh.mp3');
+	 gameBgsound = new sound(soundPath + 'bgmusic.mp3');
+	 popperBurst = new sound(soundPath + 'pop3.mp3');
+}
 
-
-// var generateRandomCell = function(){  
-// 	var maxcell = GRID_COL*GRID_ROW;
-// 	for(var i=0;i<maxcell;i++){ 
-// 	   var obj = {isActive: true}
-// 	   var randomNum = Math.floor(Math.random()*10) ;
-// 	   obj.isActive = true;
-// 	   if(randomNum <=2){
-// 	   	obj.level = 0;
-// 	   	obj.isActive = false;
-// 	   }else if(randomNum>2 && randomNum <=4){
-// 	   	obj.level = 1;
-// 	   }else if(randomNum>4 && randomNum <=8){
-// 	   	obj.level = 2;
-// 	   }else{
-// 	   	obj.level = 3;
-// 	   }
-//      obj.imageUrl = gameImages[obj.level];
-//      grid.push(obj);	
-// 	}
-// }
