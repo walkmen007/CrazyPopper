@@ -41,7 +41,10 @@ function setGameLevelData(gameLevel){
 
 function createGrid(){
   context.drawImage(gameImages[9], 0,0, canvas.width, canvas.height);
-  colorText("Level " +(gameLevel+1) , canvas.width/2 -20, canvas.height -30, 'black');
+  var curentLevel = 'Level ' + (gameLevel+1);
+  var maxclick = 'Max Tap Allow ' + maxClick; 
+  colorText(curentLevel, canvas.width/2 -20, canvas.height -30, 'black');
+  colorText(maxclick, 50, canvas.height -30, 'black');
   
   if(imageCounter == gameImages.length-1){
     for(var row = 0; row < GRID_ROW; row++){

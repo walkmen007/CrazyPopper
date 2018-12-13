@@ -38,7 +38,6 @@ function checkLeft(cell){
   --cell;
   var index = cell;
   var isFound = false;
-  //console.log("checkRight",cell, maxLeftCell, index, grid[index]);
   while(!isFound && index >= maxLeftCell){
     var temp = checkForCell(index, isFound, -1);
   	isFound = temp.isFound;
@@ -55,7 +54,6 @@ function checkTop(cell){
   cell -= GRID_COL;
   var index = cell < 0 ? null : cell;
   var isFound = false;
-  //console.log("checkTop",cell, index, grid[index]);	
   while(!isFound && index >= maxTopCell){
     var temp = checkForCell(index, isFound, -GRID_COL);
   	isFound = temp.isFound;
@@ -122,7 +120,6 @@ function handlePopperChain(cell){
           popperLeft--;
           handlePopperChain(bottomY)
        }
-       console.log("popperLeft",popperLeft);
        if(popperLeft <1 && isSetNewLevel){
           gameBgsound.stop();
           levelComplete.play();
