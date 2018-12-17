@@ -32,9 +32,9 @@ function setImageUrlStr(){
 	var imgPathlist = [];
 	var path = 'app/assets/images/';
 	imgPathlist.push('');
-	imgPathlist.push(path +'popperYellow.png');
 	imgPathlist.push(path +'popperPurple.png');
 	imgPathlist.push(path +'popperBlue.png');
+	imgPathlist.push(path +'popperYellow.png');
 	imgPathlist.push(path +'popperRightEye.png');
 	imgPathlist.push(path +'popperLeftEye.png');
 	imgPathlist.push(path +'popperExplosion.png');
