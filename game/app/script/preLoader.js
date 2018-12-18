@@ -3,7 +3,7 @@ const GRID_COL = 10;
 const GRID_WIDTH = 100;
 const GRID_HEIGHT = 80;
 
-var gameImages = [];
+var gameImages = {};
 var imageCounter = 0;
 var imgLoded = false;
 
@@ -11,7 +11,6 @@ var levelComplete;
 var missSound;
 var gameBgsound;
 var popperBurst;
-
 
 function sound(src) {
     this.sound = document.createElement("audio");
@@ -29,38 +28,41 @@ function sound(src) {
 }
 
 function setImageUrlStr(){
-	var imgPathlist = [];
+	var imageObj = {};
 	var path = 'app/assets/images/';
-	imgPathlist.push('');
-	imgPathlist.push(path +'popperPurple.png');
-	imgPathlist.push(path +'popperBlue.png');
-	imgPathlist.push(path +'popperYellow.png');
-	imgPathlist.push(path +'popperRightEye.png');
-	imgPathlist.push(path +'popperLeftEye.png');
-	imgPathlist.push(path +'popperExplosion.png');
-	imgPathlist.push(path +'swap.png');
-	imgPathlist.push(path +'projectile.png');
-	imgPathlist.push(path +'popperBackground.jpg');
-	return imgPathlist;
+	 imageObj = {
+		    'popperPurple': path +'popperPurple.png',
+		    'popperBlue': path +'popperBlue.png',
+		    'popperYellow': path +'popperYellow.png',
+		    'rightEye': path +'popperRightEye.png',
+		    'leftEye': path +'popperLeftEye.png',
+		    'popperExplosion': path +'popperExplosion.png',
+		    'swap': path +'swap.png',
+		    'projectile' : path +'projectile.png',
+		    'bgImage' : path +'popperBackground.jpg',
+		    'blankImg': '',
+	 }
+    
+	 return imageObj;
 }
 
-
 function preloadImages(callback){
-	var imgPathList = [];
 	var imgLen = 0;
-	    imgPathList = setImageUrlStr();
-	    imgLen = imgPathList.length;
-	for(var i=0; i<imgLen; i++){
-		var img = new Image();
-		gameImages.push(img);
-		img.src = imgPathList[i];
-		img.onload = function(){
-          imageCounter++;
-          if(imageCounter === 9){
-          	callback();
-          }  
-		}	
-	}
+	var imgPathObj = setImageUrlStr();
+	    imgLen = Object.keys(imgPathObj).length;
+	var loadedImages = 0;   
+   console.log("image load");
+   for(var src in imgPathObj){
+   	   gameImages[src] = new Image();
+       gameImages[src].onload = function(){
+       console.log("image loaded",gameImages);
+   	    if(++loadedImages >= 9) {
+   		  console.log("image loaded",gameImages);
+          callback();
+        }
+       }
+       gameImages[src].src = imgPathObj[src];
+   }
 }
 
 function loadSound(){
