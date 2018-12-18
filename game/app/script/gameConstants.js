@@ -15,5 +15,6 @@ var gameLevels = {
 		popperPosition: [1,8,  10,13,15,17,19,  20,24,26,27,29,  30,32,34,39, 40,45,48]
 	}
 }
-//var levelList = ['level1'];
+
+var popperLevel = [' ', 'popperPurple', 'popperBlue', 'popperYellow'];
 var levelList = ['level1', 'level2', 'level3'];
