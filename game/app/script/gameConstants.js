@@ -2,7 +2,7 @@ var gameLevels = {
 	level1: {
 		color: [1,2],
 		maxClick: 2,
-		popperPosition: [24],
+		popperPosition: [25, 26],
 	},
 	level2: {
 		color: [1, 2,3,1,1,  3,1,1,  1,3, 1,2],

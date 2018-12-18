@@ -61,6 +61,7 @@ function setGameLevelData(gameLevel){
     grid[popperPos[i]].isActive = true;
     grid[popperPos[i]].level = popperLevel[i];
     grid[popperPos[i]].imageUrl = gameImages[popperLevel[i]];
+    //console.log("grid[popperPos[i]]",grid[popperPos[i]])
     popperLeft += levelInfo.color[i];
     //popperBustLeft = popperBustLeft + 4*levelInfo.color[i];
   } 
@@ -92,7 +93,6 @@ function checkForActivePopper(){
 function bustPopper(event){
   var cell = trackLocation(event);
   var isclickValid = true;
-  console.log("popper bust speed",speed);
   gameBgsound.play();
   if(maxClick === 0){
      missSound.play();
@@ -108,8 +108,8 @@ function bustPopper(event){
      }
   }else{
       maxClick--;
-      popperLeft--;
       if(grid[cell].isActive){
+         // console.log("grid[cell] when click",cell,grid);
           --grid[cell].level;
           grid[index].imageUrl = grid[cell].level;
           grid[cell].isActive = grid[cell].level === 0 ? false : true;

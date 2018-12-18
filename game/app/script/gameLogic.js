@@ -1,189 +1,86 @@
-
+ 
 var isSetNewLevel = true;
 var speed = 1;
 var projectileList = [];
 
-function MoveObj(cell, x,y, max){  
-  this.moveX = x;
-  this.moveY = y;
-  this.cell =cell;
+function CreateProjectile(cell, direction){  
   this.w = 20;
   this.h = 20;
   this.imgIndex = 8;
+  this.xFactor = direction == 0 ? 1 : direction== 2? -1 : 0;
+  this.yFactor = direction == 1 ? 1 : direction== 3? -1 : 0;
+  this.dir = direction;
 
-  // var obj = {
-  //    rightX : checkRight(cell),
-  //    leftX : checkLeft(cell),
-  //    topY : checkUp(cell),
-  //    bottomY : checkDown(cell),
-  // }
+   var x = getX(cell);
+   var y = getY(cell);
+   var midX = GRID_WIDTH/2; 
+   var midY = GRID_HEIGHT/2;
+   var currentX = direction ==0 ? x + GRID_WIDTH : direction ==1 || direction ==3 ? x + midX : x;
+   var currentY = direction ==0 || direction ==2 ? midY + y : direction ==1 ? y+GRID_HEIGHT : y;
+  // if(this.dir ==2)
+     //console.log("curr dir",currentX);
+  this.position = {
+    x: currentX,
+    y: currentY, 
+  }
 
-  var checkForValidCell = function(cordinate, obj, index){
-    console.log("grid[obj.index]-----",cordinate, obj.index, grid[obj.index])
-    if(cordinate == obj.loc && grid[obj.index]) {
-            grid[obj.index].level = obj.level;
-            grid[obj.index].isActive = grid[obj.index].level >0 ? true : false;
-            grid[obj.index].imageUrl = grid[obj.index].level;
-            handlePopperChain(obj.index);
-            if(obj.level == 0){
-              projectileList[index]['isEmpty'] = true;
-              popperBustLeft--;
-              console.log("helllllllllllllllllll", obj.index);
-            }
-            return 0;
+  this.checkCollision = function(){
+    var x = this.position.x;
+    var y = this.position.y;
+    x = Math.floor(x/GRID_WIDTH);
+    y = Math.floor(y/GRID_HEIGHT) * GRID_COL;
+    var pos = 0;
+    var cell = x+y;
+    var triggerX, triggerY;
+    var isHit = false; var isHitByWall = false;
+    if(grid[cell] && grid[cell].isActive){
+       posX = x * GRID_WIDTH + GRID_WIDTH-20;
+       triggerX = this.position.x == x*GRID_WIDTH || (this.position.x == pos && this.dir ==2);
+       triggerY = this.position.y >= y*GRID_HEIGHT + 20 || this.position.y <= y*(GRID_HEIGHT) -20;
+       isHit = triggerX || triggerY;
     }else{
-      return 8;
+        triggerX = this.position.x >= canvas.width || this.position.x <= 0;
+        triggerY = this.position.y >= canvas.height || this.position.y <= 0;
+        isHitByWall = triggerX || triggerY;
+    }
+    return {isHitByWall:isHitByWall, cell:cell, isHit:isHit};
+  }
+
+  this.destroy = function(index, cell){
+    if(grid[cell] && !grid[cell].isActive){
+       projectileList.splice(index, 1);
+    }
+    if(grid[cell] && grid[cell].level===0){
+      grid[cell].isActive = false;
     }
   }
-  
-  this.moveRight = function(index){
-        var obj = checkRight(this.cell); 
-        if(this.moveX < obj.loc){
-          this.moveX += speed;
-          this.imgIndex = checkForValidCell(this.moveX, obj, index);
-          this.drawImg(this.imgIndex, this.moveX, this.moveY);
-        }
-  }
 
-  this.moveLeft = function(){     
-        var obj = checkLeft(this.cell);
-        if(this.moveX > obj.loc){
-           this.moveX -= speed;
-           this.imgIndex = checkForValidCell(this.moveX, obj, index);
-           this.drawImg(this.imgIndex, this.moveX, this.moveY);
-        }
-  }
+  this.moveProjectile = function(index){
+      this.position.x += (speed * this.xFactor);
+      this.position.y += (speed * this.yFactor);
+      var collision = this.checkCollision();
 
-  this.moveUp = function(index){
-    var obj = checkUp(this.cell);
-      if(this.moveY > obj.loc){
-        this.moveY -= speed;
-        this.imgIndex = checkForValidCell(this.moveY, obj, index)
-        this.drawImg(this.imgIndex, this.moveX, this.moveY);
+      //if(this.dir ==2)
+        //console.log("curr dir",this.position.x, speed * this.xFactor);
+      if(collision.isHitByWall || collision.isHit){
+        this.imgIndex = 0;
+        this.drawImg(this.imgIndex, this.position.x , this.position.y);
+        this.destroy(index, collision.cell);
+        if(grid[collision.cell] && grid[collision.cell].isActive){
+          grid[collision.cell].level--;
+          handlePopperChain(collision.cell);
+        }
+        
+      }
+      else{
+        this.imgIndex = 8;
+        this.drawImg(this.imgIndex, this.position.x , this.position.y);
       }
   }
-
-
-  this.moveDown = function(index){
-    var obj = checkDown(this.cell);
-      if(this.moveY <= obj.loc){
-        this.moveY += speed;
-        this.imgIndex = checkForValidCell(this.moveY, obj, index)
-        this.drawImg(this.imgIndex, this.moveX, this.moveY);
-      }
-      
-  }
-
   this.drawImg = function(index, x, y){
     context.drawImage(gameImages[index], x,y, this.w, this.h);
   }
 
-}
-
-function checkForCell(index, isFound, value, type){
-    var level = -1;    
-    if(grid[index].isActive){
-      level = grid[index].level -1;
-      isFound = true;
-    }else{
-      index = index + value;
-      isFound = false;
-    }  
-    return {isFound, index, level};
-}
-
-function checkRight(cell){
-  var obj = {index:0, loc:0,  level: -1};
-  var maxRightCell =Math.ceil(cell/GRID_COL) * 10;
-  console.log("maxRightCell",cell, maxRightCell);;
-  var index = cell+1;
-  var isFound = false;
-  for(;!isFound && index < maxRightCell;){
-    var temp = checkForCell(index, isFound, 1, "right");
-    isFound = temp.isFound;
-    index = temp.index;
-  }
-  if(index === maxRightCell){
-    obj.loc = canvas.width;
-    obj.index = maxRightCell;
-    obj.level = 0;
-  }else{
-     obj.index = index;  
-     obj.level = temp.level;
-     obj.loc = getX(index);
-  }
-  return obj;
-}
-
-function checkLeft(cell){
-  var minLeftCell = Math.floor(cell/GRID_COL) * GRID_COL;
-  --cell;
-  var index = cell;
-  var obj = {index:0, loc:0};
-  var isFound = false;
-  for(;!isFound && index >= minLeftCell;){
-    var temp = checkForCell(index, isFound, -1, "left");
-    isFound = temp.isFound;
-    index = temp.index; 
-  }
-  if(index < minLeftCell){
-    obj.index = -1;
-    obj.loc = -20;
-    obj.level = 0;
-  }else{
-    obj.index = index;
-    obj.loc = getX(index)+ GRID_WIDTH;
-    obj.level = temp.level;
-  }
-  return obj;
-}
-
-function checkUp(cell){
-  var maxTopCell = cell%GRID_COL;
-  cell -= GRID_COL;
-  var index = cell < 0 ? null : cell;
-  var obj = {index:0, loc:0};
-  var isFound = false;
-  for(;!isFound && index >= maxTopCell;){
-    var temp = checkForCell(index, isFound, -GRID_COL, "up");
-    isFound = temp.isFound;
-    index = temp.index; 
-  }
-  if(index < maxTopCell){
-    obj.index = -1;
-    obj.loc = 0;
-    obj.level = 0;
-  }else{
-    obj.index = index;
-    obj.loc = getY(index) + GRID_HEIGHT;
-    obj.level = temp.level;
-  }
-  return obj;
-
-}
-
-function checkDown(cell){
-  var maxBottomCell = GRID_COL*(GRID_ROW-1) + (cell%GRID_COL);
-  //console.log("maxBottomCell, ", cell, maxBottomCell)
-  cell += GRID_COL;
-  var index = cell;
-  var obj = {index:0, loc:0};
-  var isFound = false;
-  for(;!isFound && index <= maxBottomCell;){
-    var temp = checkForCell(index, isFound, GRID_COL, "Down");
-    isFound = temp.isFound;
-    index = temp.index; 
-  }
-  if(index >= maxBottomCell){
-    obj.index = -1;
-    obj.loc = canvas.height;
-    obj.level = 0;
-  }else{
-    obj.index = index;
-    obj.loc = getY(index);
-    obj.level = temp.level;
-  }
-  return obj;
 }
 
 function setNewGameLevel(){
@@ -213,53 +110,24 @@ function getX(cell){
 function getY(cell){
   return Math.floor(cell/10) * 80;
 }
-
-var islevelComplete = false;
-
+var stopId;
 function animateAll(){
-   var stopId = requestAnimationFrame(animateAll);
+    stopId = requestAnimationFrame(animateAll);
       createGrid();
       var len = projectileList.length;
       projectileList.forEach(function(item, index){
-              if(item.index==0 && !item.isEmpty){
-                item.instance.moveRight(index);
-              }
-              // if(item.index==1 && !item.isEmpty){
-              //   item.instance.moveLeft(index);
-              // }
-              // if(item.index==2 && !item.isEmpty){
-              //   item.instance.moveUp(index);
-              // }
-              // if(item.index==3 && !item.isEmpty){
-              //   item.instance.moveDown(index);
-              // }   
+         item.moveProjectile(index);               
       });
-      // if(popperBustLeft == 0 && !islevelComplete){
-      //            console.log("Speed",speed);
-      //            islevelComplete = true;
-      //            setTimeout(function(){
-      //             projectileList = [];
-      //             cancelAnimationFrame(stopId);
-      //             setNewGameLevel();
-      //             clearTimeout();
-      //           }, 2000);
-      // }
-      //console.log("gameCounter",gameCounter);
+      if(projectileList.length ==0){
+        cancelAnimationFrame(stopId);
+      }
+      //console.log("projectileList.length",projectileList.length);
 };
 
-function handlePopperChain(cell, isClick){
-   var x = getX(cell);
-   var y = getY(cell);
-   var midX = GRID_WIDTH/2; 
-   var midY = GRID_HEIGHT/2;
-   var currentX = midX +x;
-   var currentY = midY +y;
+function handlePopperChain(cell){
+  console.log("handlePopperChain",cell)
    for(var i=0; i <4; i++){
-      var obj = {
-        index : i,
-        isEmpty: false,
-        instance: new MoveObj(cell, currentX, currentY),
-      }
+      var obj = new CreateProjectile(cell, i);
       projectileList.push(obj);
     }
     animateAll();
