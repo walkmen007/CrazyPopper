@@ -16,16 +16,15 @@ var gameLevels = {
 	level1: {
 		color: [2,1, 2, 1],
 		maxClick: 2,
-		//popperPosition: [30, 29],
 		popperPosition: [15, 24, 26, 35],
 	},
 	level2: {
-		color: [1,2, 3,1, 1,1,  3,1, 1],
+		color: [1,2, 3,1, 1,1,  3,1,1],
 		maxClick: 3,	
-		popperPosition: [3,7, 14,17, 22,25, 42, 44, 48],
+		popperPosition: [3,7, 14,17, 22,25, 42,44,48],
 	},
 	level3: {
-		color: [3,1,1, 1, 3,1,2,  2,1,  1,1,3,  1,1],
+		color: [3,1,2, 1, 3,1,2, 1,2,3,  1,1],
 		maxClick: 2,
 		popperPosition: [2,5,8, 14, 20,26,29, 32,34,39, 40,45],
 	}
