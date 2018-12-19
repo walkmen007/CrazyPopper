@@ -1,18 +1,20 @@
-const GRID_ROW = 5;
-const GRID_COL = 10;
-const GRID_WIDTH = 100;
-const GRID_HEIGHT = 80;
-
-var gameImages = {};
-var imageCounter = 0;
-var imgLoded = false;
+var canvas, context;
+var grid = []; //col*row matrix Array.
+var gameLevel = 0; //For Track current Game level.
+var maxClick = 0; //Max Click allowed in game.
+ 
+var gameImages = {}; //Game image object.
 
 var levelComplete;
-var missSound;
+var missSound; // Miss Hit Sound.
 var gameBgsound;
-var popperBurst;
+var popperBurstSound;
 
-function sound(src) {
+var speed = 1; // Default speed for projectile in any direction.
+var projectileList = []; //Array for projectile.
+var stopId; // variable to track animationFrame.
+
+function Sound(src) {
     this.sound = document.createElement("audio");
     this.sound.src = src;
     this.sound.setAttribute("preload", "auto");
@@ -25,7 +27,7 @@ function sound(src) {
     this.stop = function(){
         this.sound.pause();
     }    
-}
+}// Sound Class.
 
 function setImageUrlStr(){
 	var imageObj = {};
@@ -44,32 +46,28 @@ function setImageUrlStr(){
 	 }
     
 	 return imageObj;
-}
+}//Set default path for images.
 
 function preloadImages(callback){
-	var imgLen = 0;
 	var imgPathObj = setImageUrlStr();
-	    imgLen = Object.keys(imgPathObj).length;
+	var imgLen = Object.keys(imgPathObj).length || 0;
 	var loadedImages = 0;   
-   console.log("image load");
    for(var src in imgPathObj){
    	   gameImages[src] = new Image();
        gameImages[src].onload = function(){
-       console.log("image loaded",gameImages);
    	    if(++loadedImages >= 9) {
-   		  console.log("image loaded",gameImages);
           callback();
         }
        }
        gameImages[src].src = imgPathObj[src];
    }
-}
+}//Preload images.
 
 function loadSound(){
 	 var soundPath = 'app/assets/sound/';
-	 levelComplete = new sound(soundPath +'applauseShort.mp3');
-	 missSound = new sound(soundPath + 'awh.mp3');
-	 gameBgsound = new sound(soundPath + 'bgmusic.mp3');
-	 popperBurst = new sound(soundPath + 'pop3.mp3');
-}
+	 levelComplete = new Sound(soundPath +'applauseShort.mp3');
+	 missSound = new Sound(soundPath + 'awh.mp3');
+	 gameBgsound = new Sound(soundPath + 'bgmusic.mp3');
+	 popperBurstSound = new Sound(soundPath + 'pop3.mp3');
+}//Load sound.
 
