@@ -31,4 +31,4 @@ var gameLevels = {
 }
 
 var popperLevel = [' ', 'popperPurple', 'popperBlue', 'popperYellow'];
-var levelList = ['level1', 'level2', 'level3'];
+var levelList = ['level2', 'level2', 'level3'];

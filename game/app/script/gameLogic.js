@@ -18,25 +18,20 @@ function checkForGameEnd(){
   }
 }// Check for Game End Condition;
 
-function CreateProjectile(cell, direction){  
-  this.w = 20;
-  this.h = 20;
-  this.xFactor = direction == 0 ? 1 : direction== 2? -1 : 0;
-  this.yFactor = direction == 1 ? 1 : direction== 3? -1 : 0;
-  this.dir = direction;
+CreateProjectile.prototype.destroy = function(index, collission){
+    console.log("Destroy call");
+    delete this.position.x;
+    delete this.position.y;
+    var cell = this.cell
+    projectileList.splice(index, 1);
+    if(grid[cell] && collission.isHit){
+          grid[collission.cell].level--;
+          grid[collission.cell].isActive = grid[collission.cell].level==0 ? false: true;
+          handlePopperChain(collission.cell);
+    } 
+}
 
-   var x = getX(cell);
-   var y = getY(cell);
-   var midX = GRID_WIDTH/2; 
-   var midY = GRID_HEIGHT/2;
-   var currentX = direction ==0 ? x + GRID_WIDTH : direction ==1 || direction ==3 ? x + midX : x;
-   var currentY = direction ==0 || direction ==2 ? midY + y : direction ==1 ? y+GRID_HEIGHT : y;
-  this.position = {
-    x: currentX,
-    y: currentY, 
-  }
-
-  this.checkCollision = function(){
+CreateProjectile.prototype.checkCollision = function (){
     var x = this.position.x;
     var y = this.position.y;
     x = x < 0 ? 0 : Math.floor(x/GRID_WIDTH);
@@ -55,22 +50,10 @@ function CreateProjectile(cell, direction){
         triggerY = this.position.y >= canvas.height || this.position.y <= 0;
         isHitByWall = triggerX || triggerY;
     }
-    return {isHitByWall:isHitByWall, cell:cell, isHit:isHit};
-  }// check collosion detection condition  i.e. hit by wall or hit by popper.
+    return {isHitByWall:isHitByWall, cell:cell, isHit:isHit}; 
+}
 
-  this.destroy = function(index, collission){  
-    delete this.position.x;
-    delete this.position.y;
-    projectileList.splice(index, 1);
-    if(grid[cell] && collission.isHit){
-          grid[collission.cell].level--;
-          grid[collission.cell].isActive = grid[collission.cell].level==0 ? false: true;
-          handlePopperChain(collission.cell);
-    } 
-
-  }// Destroy projectile and remove frm projectileList array.
-
-  this.moveProjectile = function(index){
+CreateProjectile.prototype.moveProjectile = function(index){
       this.position.x += (speed * this.xFactor);
       this.position.y += (speed * this.yFactor);
       var collision = this.checkCollision();
@@ -81,11 +64,33 @@ function CreateProjectile(cell, direction){
       }
       else{
         this.drawImg(gameImages.projectile, this.position.x , this.position.y);
-      }
-  }
-  this.drawImg = function(img, x, y){
+      }  
+}
+
+CreateProjectile.prototype.drawImg = function(){
+   context.drawImage(img, x,y, this.w, this.h);
+}
+
+function CreateProjectile(cell, direction){  
+  this.w = 20;
+  this.h = 20;
+  this.xFactor = direction == 0 ? 1 : direction== 2? -1 : 0;
+  this.yFactor = direction == 1 ? 1 : direction== 3? -1 : 0;
+  this.dir = direction;
+  this.cell = cell;
+   var x = getX(this.cell);
+   var y = getY(this.cell);
+   var midX = GRID_WIDTH/2; 
+   var midY = GRID_HEIGHT/2;
+   var currentX = direction ==0 ? x + GRID_WIDTH : direction ==1 || direction ==3 ? x + midX : x;
+   var currentY = direction ==0 || direction ==2 ? midY + y : direction ==1 ? y+GRID_HEIGHT : y;
+   this.position = {
+      x: currentX,
+      y: currentY, 
+   }
+   this.drawImg = function(img, x, y){
     context.drawImage(img, x,y, this.w, this.h);
-  }
+   }
 
 }//Class CreateProjectile for Projectile Collossion, Destroy, init New chain. 
 
