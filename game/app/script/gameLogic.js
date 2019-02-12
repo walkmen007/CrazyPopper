@@ -27,7 +27,7 @@ CreateProjectile.prototype.destroy = function(index, collission){
     if(grid[cell] && collission.isHit){
           grid[collission.cell].level--;
           grid[collission.cell].isActive = grid[collission.cell].level==0 ? false: true;
-          handlePopperChain(collission.cell);
+          handlePopperChain(collission.cell, false);
     } 
 }
 
@@ -108,12 +108,15 @@ function getY(cell){
   return Math.floor(cell/GRID_COL) * GRID_HEIGHT; 
 } //to get offsetY.
 
-function handlePopperChain(cell){
+function handlePopperChain(cell, isTrue){
     for(var i=0; i <direction; i++){
       var obj = new CreateProjectile(cell, i);
       projectileList.push(obj);
     }
-    animateAll();
+    if(isTrue){
+      animateAll();
+    }
+    
 }// createnew projectile object and delete once life over.
 
 function setNewGameLevel(){
